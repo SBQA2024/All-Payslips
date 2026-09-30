@@ -1,0 +1,566 @@
+Developer saying not a bug --
+
+Understand the Rejection Reason
+
+Common reasons:
+"Works as designed"
+"Cannot reproduce"
+"Duplicate issue"
+"Environment issue"
+"Low priority"
+"Not a bug"
+
+Validate Your Findings
+Recheck:
+Test steps
+Test environment
+Data used
+Application version/build
+Expected vs actual behavior
+Requirements/User Story/Acceptance Criteria
+
+Provide Strong Evidence
+Screenshots
+Video recording
+Logs
+Network traces
+Database evidence
+Error messages
+
+If disagreement remains:
+Involve the Product Owner
+Business Analyst
+Tech Lead
+Engineering Manager
+
+
+2.Test passes locally but fails in Jenkins.
+1. Environment Differences
+
+Java/.NET/Python version
+Browser version
+OS differences
+Environment variables
+Configuration files
+
+Questions:
+
+Is the test creating its own data?
+Does Jenkins start with a clean environment?
+
+remove thread.sleep
+
+Gather Evidence
+
+Collect:
+
+Jenkins console log
+Screenshot
+Test report
+Stack trace
+Video recording (if available)
+Checklist
+
+✅ Same code version
+ ✅ Same test data
+ ✅ Same environment variables
+ ✅ Same browser/runtime versions
+ ✅ No hardcoded waits
+ ✅ No dependency on local files
+ ✅ No parallel execution conflicts
+ ✅ Review Jenkins logs and screenshots
+ 
+ 
+ 3.If only 1 day left for testing with much test cases what to do
+ 
+ --Focus on risk-based testing.
+ 
+ Prioritize Critical Functionality First Core business flows
+Revenue-impacting features
+Customer-facing functionality
+Recently changed areas
+Previously defect-prone modules
+
+Use Risk-Based Testing
+
+Categorize test cases:
+
+Focus on Changed Areas
+
+Review:
+
+Release notes
+User stories
+Git commits
+Developer change list
+
+Use automation for:
+
+Smoke testing
+Regression testing
+
+Perform Exploratory Testing
+
+Instead of following every test case:
+
+Explore critical workflows
+Test edge cases
+Think like a real user
+
+Inform stakeholders:
+
+"Due to the limited timeline, all critical and high-priority scenarios will be covered. 
+Medium and low-priority regression testing may remain partially untested and carries release risk."
+clearly document any untested areas as release risks."
+
+4.Your script is flaky. How do you stabilize it?
+
+Root Cause Analysis → Stabilization → Validation → Prevention 
+When a script is flaky, I first identify whether the issue is caused by synchronization, test data, environment differences, 
+or unstable locators. I analyze logs and failure patterns, replace hard waits with explicit waits, ensure independent test data, 
+improve locator strategies, and validate execution in CI/CD environments. Finally, I run the test multiple times to confirm stability 
+and add detailed logging for future troubleshooting. My objective is to eliminate the root cause rather than masking the issue by rerunning 
+failed tests."
+
+A flaky test is usually caused by synchronization issues, unstable test data, environment dependencies, or poor test design.
+
+1. Analyze Failure Patterns
+
+Jenkins logs
+Screenshots
+Videos
+Stack traces
+Failure frequency
+
+Remove hard waits
+
+Unstable locators cause random failures.
+
+Handle Dynamic Elements Properly
+
+I compare:
+
+Browser versions
+Driver versions
+Network conditions
+Jenkins and local configurations
+
+
+5.Dynamic Id what to do
+
+Use Partial ID Matching
+Use Starts-With
+Use Other Stable Attributes
+Use Relative XPath
+Use CSS Selectors
+
+6.Element is not getting clicked although it is visible. What will you do?
+
+Use Explicit Wait:
+Wait for the overlay to disappear:
+Scroll to the element:
+The element reference becomes stale.
+Frame/Iframe Issue
+Multiple similar elements may exist.
+
+7.How do you automate OTP/Captcha?
+
+For OTP, I automate retrieval through APIs, databases, email services, or test-specific mechanisms provided by developers. 
+For CAPTCHA, I do not attempt to automate it because it is designed to prevent automation. Instead, 
+I coordinate with the development team to disable it or provide a bypass in QA environments. 
+This results in reliable and maintainable automation while preserving production security.
+
+8.Application opens multiple windows. How do you handle it?
+
+When an application opens multiple windows or tabs, I use getWindowHandle() to store the parent window and getWindowHandles() to retrieve all open windows. I then iterate through the handles and switch to the required window based on its handle, title, or URL. After completing the actions in the child window, 
+I switch back to the parent window and continue execution. 
+This approach ensures reliable window management in Selenium automation.
+
+9.How do you handle stale element exception?
+
+A StaleElementReferenceException occurs when Selenium's reference to a web element becomes invalid because the DOM has changed. 
+I usually handle it by re-locating the element, using explicit waits, and avoiding storing WebElement references for long periods. 
+For dynamically updating applications such as React or Angular, I may use ExpectedConditions.refreshed() or a controlled retry mechanism. 
+My focus is on identifying why the DOM changed and making the test resilient rather than simply suppressing the exception."
+
+10.How is OOP used in your framework?
+
+11.How do you pass multiple test data in Cucumber?
+
+I usually use Scenario Outline with Examples for data-driven testing because it runs the same scenario with multiple data sets. 
+For tabular data within a single step, I use Cucumber Data Tables. In enterprise frameworks, 
+test data is often maintained externally in Excel, JSON, or databases and fetched dynamically during execution."
+
+
+12.How do you generate reports?
+
+In my framework, I generate reports using Cucumber HTML/JSON reports and Extent Reports. 
+Extent Reports provide detailed execution status, screenshots, logs, and test summaries. 
+In CI/CD, Jenkins publishes these reports after every execution so stakeholders can easily track test results and failures.
+
+13.How do you run tests in parallel?
+
+To run scenarios in parallel, I use Cucumber with TestNG. 
+I extend AbstractTestNGCucumberTests and override the scenarios() method with @DataProvider(parallel = true). This allows TestNG to execute multiple Cucumber scenarios simultaneously. 
+I also ensure each scenario has its own WebDriver instance to avoid thread-safety issues."
+
+
+14.Explain CI/CD pipeline.
+Jenkins triggers the CI/CD pipeline through events such as Git webhooks, SCM polling, scheduled executions, or manual triggers. 
+Once triggered, Jenkins checks out the latest code, builds the application, runs unit and automation tests, generates reports,
+ and deploys the build to target environments. In my projects, Jenkins executes Selenium-Cucumber automation suites after each 
+ code commit and publishes Extent or Cucumber reports. 
+Based on the test results, the pipeline either proceeds to deployment or stops the release."
+
+15.How do you trigger Jenkins jobs automatically?
+Jenkins jobs can be triggered automatically using Git webhooks, SCM polling, 
+scheduled CRON jobs, upstream/downstream job dependencies, or Jenkins pipelines. 
+In my projects, we primarily use Git webhooks so that every code commit automatically triggers the CI pipeline, 
+executes Selenium-Cucumber automation tests, generates Extent Reports, and updates the build status."
+
+16.How do you execute smoke tests after deployment?
+I integrate smoke tests into Jenkins by tagging critical scenarios with @Smoke in Cucumber. 
+After deployment, Jenkins triggers a Maven command such as mvn test -Dcucumber.filter.tags='@Smoke' to execute only the smoke suite. 
+Jenkins then generates and publishes reports, and based on the results, 
+the pipeline either proceeds to regression testing or stops the release if critical functionality fails."
+
+17.Build is failing in Jenkins. What do you check?
+
+18.How do you schedule nightly regression?
+
+I schedule nightly regression through Jenkins using the 'Build Periodically' option or a CRON trigger in a Jenkins pipeline. 
+Jenkins automatically executes the Selenium-Cucumber regression suite at a specified time, generates Extent Reports, and sends 
+notifications to the team. This provides overnight validation of the application's critical functionality and helps identify issues 
+before the next day's testing."
+
+19.How do you decide what to automate?
+
+I decide what to automate by evaluating business criticality, execution frequency, stability, risk, and return on investment. 
+I prioritize regression, smoke, and high-impact business workflows because they are executed repeatedly and benefit most from automation. 
+I avoid automating highly unstable features, 
+one-time validations, and exploratory testing activities where manual testing is more effective.
+
+20.A release is tomorrow and only 3 hours are available. What will you test?
+With only 3 hours before release, I would follow a risk-based testing approach. 
+First, I'd execute smoke tests to ensure the build is stable. Then I'd test all recent changes, 
+critical business workflows, and high-risk areas. I would also run available automation suites for 
+quick regression coverage. Finally, I'd clearly communicate any untested areas 
+and associated risks to stakeholders so they can make an informed release decision."
+
+21.How many automation cases have you developed?
+
+
+22.
+Professional Summary
+
+"I am a QA Automation Engineer with over 7 years of experience in Manual and Automation Testing. 
+I have worked extensively on web, mobile, and API testing across different domains, including HRMS applications. 
+My expertise includes test planning, test case design, defect management, automation framework development, and end-to-end quality assurance. 
+I have experience working in Agile Scrum teams and actively participate in all Agile ceremonies."
+
+
+
+23.Cross Browser execution --
+
+1.config.properties  --browser=chrome
+
+2.ConfigReader.java --public String getBrowser() {
+    return prop.getProperty("browser");
+}
+
+3.BaseClass.java ---String browser = new ConfigReader().getBrowser();
+
+if(browser.equalsIgnoreCase("chrome")) {
+driver = new ChromeDriver();
+}
+else if(browser.equalsIgnoreCase("edge")) {
+driver = new EdgeDriver();
+}
+else if(browser.equalsIgnoreCase("firefox")) {
+driver = new FirefoxDriver();
+}
+
+
+Developer saying not a bug --
+
+Understand the Rejection Reason
+
+Common reasons:
+"Works as designed"
+"Cannot reproduce"
+"Duplicate issue"
+"Environment issue"
+"Low priority"
+"Not a bug"
+
+Validate Your Findings
+Recheck:
+Test steps
+Test environment
+Data used
+Application version/build
+Expected vs actual behavior
+Requirements/User Story/Acceptance Criteria
+
+Provide Strong Evidence
+Screenshots
+Video recording
+Logs
+Network traces
+Database evidence
+Error messages
+
+If disagreement remains:
+Involve the Product Owner
+Business Analyst
+Tech Lead
+Engineering Manager
+
+
+2.Test passes locally but fails in Jenkins.
+1. Environment Differences
+
+Java/.NET/Python version
+Browser version
+OS differences
+Environment variables
+Configuration files
+
+Questions:
+
+Is the test creating its own data?
+Does Jenkins start with a clean environment?
+
+remove thread.sleep
+
+Gather Evidence
+
+Collect:
+
+Jenkins console log
+Screenshot
+Test report
+Stack trace
+Video recording (if available)
+Checklist
+
+✅ Same code version
+ ✅ Same test data
+ ✅ Same environment variables
+ ✅ Same browser/runtime versions
+ ✅ No hardcoded waits
+ ✅ No dependency on local files
+ ✅ No parallel execution conflicts
+ ✅ Review Jenkins logs and screenshots
+ 
+ 
+ 3.If only 1 day left for testing with much test cases what to do
+ 
+ --Focus on risk-based testing.
+ 
+ Prioritize Critical Functionality First Core business flows
+Revenue-impacting features
+Customer-facing functionality
+Recently changed areas
+Previously defect-prone modules
+
+Use Risk-Based Testing
+
+Categorize test cases:
+
+Focus on Changed Areas
+
+Review:
+
+Release notes
+User stories
+Git commits
+Developer change list
+
+Use automation for:
+
+Smoke testing
+Regression testing
+
+Perform Exploratory Testing
+
+Instead of following every test case:
+
+Explore critical workflows
+Test edge cases
+Think like a real user
+
+Inform stakeholders:
+
+"Due to the limited timeline, all critical and high-priority scenarios will be covered. 
+Medium and low-priority regression testing may remain partially untested and carries release risk."
+clearly document any untested areas as release risks."
+
+4.Your script is flaky. How do you stabilize it?
+
+Root Cause Analysis → Stabilization → Validation → Prevention 
+When a script is flaky, I first identify whether the issue is caused by synchronization, test data, environment differences, 
+or unstable locators. I analyze logs and failure patterns, replace hard waits with explicit waits, ensure independent test data, 
+improve locator strategies, and validate execution in CI/CD environments. Finally, I run the test multiple times to confirm stability 
+and add detailed logging for future troubleshooting. My objective is to eliminate the root cause rather than masking the issue by rerunning 
+failed tests."
+
+A flaky test is usually caused by synchronization issues, unstable test data, environment dependencies, or poor test design.
+
+1. Analyze Failure Patterns
+
+Jenkins logs
+Screenshots
+Videos
+Stack traces
+Failure frequency
+
+Remove hard waits
+
+Unstable locators cause random failures.
+
+Handle Dynamic Elements Properly
+
+I compare:
+
+Browser versions
+Driver versions
+Network conditions
+Jenkins and local configurations
+
+
+5.Dynamic Id what to do
+
+Use Partial ID Matching
+Use Starts-With
+Use Other Stable Attributes
+Use Relative XPath
+Use CSS Selectors
+
+6.Element is not getting clicked although it is visible. What will you do?
+
+Use Explicit Wait:
+Wait for the overlay to disappear:
+Scroll to the element:
+The element reference becomes stale.
+Frame/Iframe Issue
+Multiple similar elements may exist.
+
+7.How do you automate OTP/Captcha?
+
+For OTP, I automate retrieval through APIs, databases, email services, or test-specific mechanisms provided by developers. 
+For CAPTCHA, I do not attempt to automate it because it is designed to prevent automation. Instead, 
+I coordinate with the development team to disable it or provide a bypass in QA environments. 
+This results in reliable and maintainable automation while preserving production security.
+
+8.Application opens multiple windows. How do you handle it?
+
+When an application opens multiple windows or tabs, I use getWindowHandle() to store the parent window and getWindowHandles() to retrieve all open windows. I then iterate through the handles and switch to the required window based on its handle, title, or URL. After completing the actions in the child window, 
+I switch back to the parent window and continue execution. 
+This approach ensures reliable window management in Selenium automation.
+
+9.How do you handle stale element exception?
+
+A StaleElementReferenceException occurs when Selenium's reference to a web element becomes invalid because the DOM has changed. 
+I usually handle it by re-locating the element, using explicit waits, and avoiding storing WebElement references for long periods. 
+For dynamically updating applications such as React or Angular, I may use ExpectedConditions.refreshed() or a controlled retry mechanism. 
+My focus is on identifying why the DOM changed and making the test resilient rather than simply suppressing the exception."
+
+10.How is OOP used in your framework?
+
+11.How do you pass multiple test data in Cucumber?
+
+I usually use Scenario Outline with Examples for data-driven testing because it runs the same scenario with multiple data sets. 
+For tabular data within a single step, I use Cucumber Data Tables. In enterprise frameworks, 
+test data is often maintained externally in Excel, JSON, or databases and fetched dynamically during execution."
+
+
+12.How do you generate reports?
+
+In my framework, I generate reports using Cucumber HTML/JSON reports and Extent Reports. 
+Extent Reports provide detailed execution status, screenshots, logs, and test summaries. 
+In CI/CD, Jenkins publishes these reports after every execution so stakeholders can easily track test results and failures.
+
+13.How do you run tests in parallel?
+
+To run scenarios in parallel, I use Cucumber with TestNG. 
+I extend AbstractTestNGCucumberTests and override the scenarios() method with @DataProvider(parallel = true). This allows TestNG to execute multiple Cucumber scenarios simultaneously. 
+I also ensure each scenario has its own WebDriver instance to avoid thread-safety issues."
+
+
+14.Explain CI/CD pipeline.
+Jenkins triggers the CI/CD pipeline through events such as Git webhooks, SCM polling, scheduled executions, or manual triggers. 
+Once triggered, Jenkins checks out the latest code, builds the application, runs unit and automation tests, generates reports,
+ and deploys the build to target environments. In my projects, Jenkins executes Selenium-Cucumber automation suites after each 
+ code commit and publishes Extent or Cucumber reports. 
+Based on the test results, the pipeline either proceeds to deployment or stops the release."
+
+15.How do you trigger Jenkins jobs automatically?
+Jenkins jobs can be triggered automatically using Git webhooks, SCM polling, 
+scheduled CRON jobs, upstream/downstream job dependencies, or Jenkins pipelines. 
+In my projects, we primarily use Git webhooks so that every code commit automatically triggers the CI pipeline, 
+executes Selenium-Cucumber automation tests, generates Extent Reports, and updates the build status."
+
+16.How do you execute smoke tests after deployment?
+I integrate smoke tests into Jenkins by tagging critical scenarios with @Smoke in Cucumber. 
+After deployment, Jenkins triggers a Maven command such as mvn test -Dcucumber.filter.tags='@Smoke' to execute only the smoke suite. 
+Jenkins then generates and publishes reports, and based on the results, 
+the pipeline either proceeds to regression testing or stops the release if critical functionality fails."
+
+17.Build is failing in Jenkins. What do you check?
+
+18.How do you schedule nightly regression?
+
+I schedule nightly regression through Jenkins using the 'Build Periodically' option or a CRON trigger in a Jenkins pipeline. 
+Jenkins automatically executes the Selenium-Cucumber regression suite at a specified time, generates Extent Reports, and sends 
+notifications to the team. This provides overnight validation of the application's critical functionality and helps identify issues 
+before the next day's testing."
+
+19.How do you decide what to automate?
+
+I decide what to automate by evaluating business criticality, execution frequency, stability, risk, and return on investment. 
+I prioritize regression, smoke, and high-impact business workflows because they are executed repeatedly and benefit most from automation. 
+I avoid automating highly unstable features, 
+one-time validations, and exploratory testing activities where manual testing is more effective.
+
+20.A release is tomorrow and only 3 hours are available. What will you test?
+With only 3 hours before release, I would follow a risk-based testing approach. 
+First, I'd execute smoke tests to ensure the build is stable. Then I'd test all recent changes, 
+critical business workflows, and high-risk areas. I would also run available automation suites for 
+quick regression coverage. Finally, I'd clearly communicate any untested areas 
+and associated risks to stakeholders so they can make an informed release decision."
+
+21.How many automation cases have you developed?
+
+
+22.
+Professional Summary
+
+"I am a QA Automation Engineer with over 7 years of experience in Manual and Automation Testing. 
+I have worked extensively on web, mobile, and API testing across different domains, including HRMS applications. 
+My expertise includes test planning, test case design, defect management, automation framework development, and end-to-end quality assurance. 
+I have experience working in Agile Scrum teams and actively participate in all Agile ceremonies."
+
+
+
+23.Cross Browser execution --
+
+1.config.properties  --browser=chrome
+
+2.ConfigReader.java --public String getBrowser() {
+    return prop.getProperty("browser");
+}
+
+3.BaseClass.java ---String browser = new ConfigReader().getBrowser();
+
+if(browser.equalsIgnoreCase("chrome")) {
+driver = new ChromeDriver();
+}
+else if(browser.equalsIgnoreCase("edge")) {
+driver = new EdgeDriver();
+}
+else if(browser.equalsIgnoreCase("firefox")) {
+driver = new FirefoxDriver();
+}
+
+
